@@ -8,7 +8,7 @@
       "type": "image/x-icon"
     }
   ],
-  "start_url": "http://localhost:8000",
+  "start_url": "https://react-backend1-9q7t.onrender.com",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
