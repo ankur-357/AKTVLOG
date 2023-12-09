@@ -144,7 +144,7 @@ const Login = ({ isUserAuthenticated }) => {
             sessionStorage.setItem('accessToken', `Bearer ${response.data.accessToken}`);
             sessionStorage.setItem('refreshToken', `Bearer ${response.data.refreshToken}`);
             setAccount({ name: response.data.name, username: response.data.username });
-            
+
             isUserAuthenticated(true)
             setLogin(loginInitialValues);
             navigate('/');
@@ -169,36 +169,36 @@ const Login = ({ isUserAuthenticated }) => {
     }
 
     return (
-        <Box style={{display:'flex',height:'100vh'}} >
-        <Component>
-            <Box>
-                <Image src={imageURL} alt="blog" />
-                {
-                    account === 'login' ?
-                        <Wrapper>
-                            <h2 className='flag' style={{textAlign:'center',fontWeight:'400', top:'0%'}}>Log In</h2>
-                            <TextField variant="outlined" value={login.username} onChange={(e) => onValueChange(e)} name='username' label='Enter Username' focused/>
-                            <TextField variant="outlined" value={login.password} onChange={(e) => onValueChange(e)} type='password' name='password' label='Enter Password' focused/>
+        <Box style={{ display: 'flex', height: '100vh' }} >
+            <Component>
+                <Box>
+                    <Image src={imageURL} alt="blog" />
+                    {
+                        account === 'login' ?
+                            <Wrapper>
+                                <h2 className='flag' style={{ textAlign: 'center', fontWeight: '400', top: '0%' }}>Log In</h2>
+                                <TextField variant="outlined" value={login.username} onChange={(e) => onValueChange(e)} name='username' label='Enter Username' focused />
+                                <TextField variant="outlined" value={login.password} onChange={(e) => onValueChange(e)} type='password' name='password' label='Enter Password' focused />
 
-                            {error && <Error>{error}</Error>}
+                                {error && <Error>{error}</Error>}
 
-                            <LoginButton className='button-86' onClick={() => loginUser()} ><abbr title='Log In'> <LoginIcon /></abbr></LoginButton>
-                            <Text style={{ textAlign: 'center', color:'#000' }}>OR</Text>
-                            <SignupButton className='button-86' onClick={() => toggleSignup()} style={{ marginBottom: 50 }}><abbr title='Create New Account'><PersonAddAltIcon /></abbr></SignupButton>
-                        </Wrapper> :
-                        <Wrapper>
-                            <h2 className='flag' style={{textAlign:'center',fontWeight:'400', top:'0%'}}>Sign Up</h2>
-                            <TextField variant="outlined" onChange={(e) => onInputChange(e)} type='username' name='username' label='Enter Username' focused/>
-                            <TextField variant="outlined" onChange={(e) => onInputChange(e)} type='name' name='name' label='Enter Full Name' focused/>
-                            <TextField variant="outlined" onChange={(e) => onInputChange(e)} name='password' label='Enter Password' focused/>
+                                <LoginButton className='button-86' onClick={() => loginUser()} ><abbr title='Log In'> <LoginIcon /></abbr></LoginButton>
+                                <Text style={{ textAlign: 'center', color: '#000' }}>OR</Text>
+                                <SignupButton className='button-86' onClick={() => toggleSignup()} style={{ marginBottom: 50 }}><abbr title='Create New Account'><PersonAddAltIcon /></abbr></SignupButton>
+                            </Wrapper> :
+                            <Wrapper>
+                                <h2 className='flag' style={{ textAlign: 'center', fontWeight: '400', top: '0%' }}>Sign Up</h2>
+                                <TextField variant="outlined" onChange={(e) => onInputChange(e)} type='username' name='username' label='Enter Username' focused />
+                                <TextField variant="outlined" onChange={(e) => onInputChange(e)} type='name' name='name' label='Enter Full Name' focused />
+                                <TextField variant="outlined" onChange={(e) => onInputChange(e)} name='password' label='Enter Password' focused />
 
-                            <SignupButton className='button-86' onClick={() => signupUser()} ><abbr title="Create Account"><PersonAddAltIcon /></abbr></SignupButton>
-                            <Text style={{ textAlign: 'center' , color:'#000'}}>OR</Text>
-                            <LoginButton className='button-86' onClick={() => toggleSignup()}><abbr title="Already Have An Account"><KeyboardBackspaceIcon /></abbr></LoginButton>
-                        </Wrapper>
-                }
-            </Box>
-        </Component>
+                                <SignupButton className='button-86' onClick={() => signupUser()} ><abbr title="Create Account"><PersonAddAltIcon /></abbr></SignupButton>
+                                <Text style={{ textAlign: 'center', color: '#000' }}>OR</Text>
+                                <LoginButton className='button-86' onClick={() => toggleSignup()}><abbr title="Already Have An Account"><KeyboardBackspaceIcon /></abbr></LoginButton>
+                            </Wrapper>
+                    }
+                </Box>
+            </Component>
         </Box>
     )
 }
