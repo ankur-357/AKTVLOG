@@ -3,17 +3,25 @@ import mongoose from 'mongoose';
 
 const url = 'https://react-backend1-9q7t.onrender.com';
 
-
 let gfs, gridfsBucket;
 const conn = mongoose.connection;
-conn.once('open', () => {
+
+// Ensure the MongoDB connection is open before setting up GridFS
+if (conn.readyState === 1) {
+    setupGridFS();
+} else {
+    conn.once('open', () => {
+        setupGridFS();
+    });
+}
+
+function setupGridFS() {
     gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
         bucketName: 'fs'
     });
     gfs = grid(conn.db, mongoose.mongo);
     gfs.collection('fs');
-});
-
+}
 
 export const uploadImage = (request, response) => {
     if (!request.file)
@@ -27,8 +35,6 @@ export const uploadImage = (request, response) => {
 export const getImage = async (request, response) => {
     try {
         const file = await gfs.files.findOne({ filename: request.params.filename });
-        // const readStream = gfs.createReadStream(file.filename);
-        // readStream.pipe(response);
         const readStream = gridfsBucket.openDownloadStream(file._id);
         readStream.pipe(response);
     } catch (error) {
