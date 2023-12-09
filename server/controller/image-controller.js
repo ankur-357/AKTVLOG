@@ -1,7 +1,7 @@
 import grid from 'gridfs-stream';
 import mongoose from 'mongoose';
 
-const url = 'https://react-backend1-9q7t.onrender.com';
+const url = 'http://localhost:8000';
 
 let gfs, gridfsBucket;
 const conn = mongoose.connection;
