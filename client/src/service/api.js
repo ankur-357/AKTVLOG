@@ -10,16 +10,16 @@ const axiosInstance = axios.create({
     baseURL: API_URL,
     timeout: 10000,
     headers: {
-        "content-type": "application/json"
-    }
+        'Content-Type': 'application/json',
+    },
 });
 
 axiosInstance.interceptors.request.use(
     function (config) {
         if (config.TYPE.params) {
-            config.params = config.TYPE.params
+            config.params = config.TYPE.params;
         } else if (config.TYPE.query) {
-            config.url = config.url + '/' + config.TYPE.query;
+            config.url = `${config.url}/${config.TYPE.query}`;
         }
         return config;
     },
@@ -37,107 +37,85 @@ axiosInstance.interceptors.response.use(
         // Stop global loader here
         return Promise.reject(ProcessError(error));
     }
-)
+);
 
-///////////////////////////////
-// If success -> returns { isSuccess: true, data: object }
-// If fail -> returns { isFailure: true, status: string, msg: string, code: int }
-//////////////////////////////
-const processResponse = (response) => {
-    if (response?.status === 200) {
-        return { isSuccess: true, data: response.data }
+function processResponse(response) {
+    if (response?.status >= 200 && response?.status < 300) {
+        return { isSuccess: true, data: response.data };
     } else {
         return {
             isFailure: true,
             status: response?.status,
             msg: response?.msg,
-            code: response?.code
-        }
+            code: response?.code,
+        };
     }
 }
 
-///////////////////////////////
-// If success -> returns { isSuccess: true, data: object }
-// If fail -> returns { isError: true, status: string, msg: string, code: int }
-//////////////////////////////
-const ProcessError = async (error) => {
+async function ProcessError(error) {
     if (error.response) {
-        // Request made and server responded with a status code 
-        // that falls out of the range of 2xx
         if (error.response?.status === 403) {
-            // const { url, config } = error.response;
-            // console.log(error);
-            // try {
-            //     let response = await API.getRefreshToken({ token: getRefreshToken() });
-            //     if (response.isSuccess) {
+            // Handle refresh token logic if needed
             sessionStorage.clear();
-            //         setAccessToken(response.data.accessToken);
-
-            //         const requestData = error.toJSON();
-
-            //         let response1 = await axios({
-            //             method: requestData.config.method,
-            //             url: requestData.config.baseURL + requestData.config.url,
-            //             headers: { "content-type": "application/json", "authorization": getAccessToken() },
-            //             params: requestData.config.params
-            //         });
-            //     }
-            // } catch (error) {
-            //     return Promise.reject(error)
-            // }
         } else {
-            console.log("ERROR IN RESPONSE: ", error.toJSON());
+            console.log('ERROR IN RESPONSE: ', error);
             return {
                 isError: true,
                 msg: API_NOTIFICATION_MESSAGES.responseFailure,
-                code: error.response.status
-            }
+                code: error.response.status,
+            };
         }
     } else if (error.request) {
         // The request was made but no response was received
-        console.log("ERROR IN RESPONSE: ", error.toJSON());
+        console.log('ERROR IN RESPONSE: ', error);
         return {
             isError: true,
             msg: API_NOTIFICATION_MESSAGES.requestFailure,
-            code: ""
-        }
+            code: '',
+        };
     } else {
         // Something happened in setting up the request that triggered an Error
-        console.log("ERROR IN RESPONSE: ", error.toJSON());
+        console.log('ERROR IN RESPONSE: ', error);
         return {
             isError: true,
             msg: API_NOTIFICATION_MESSAGES.networkError,
-            code: ""
-        }
+            code: '',
+        };
     }
 }
 
 const API = {};
 
+const createAxiosConfig = (url, method, body, responseType, showUploadProgress, showDownloadProgress) => {
+    const config = {
+        method,
+        url,
+        data: method === 'DELETE' ? '' : body,
+        responseType,
+        headers: {
+            Authorization: getAccessToken(),
+        },
+        TYPE: getType({ method }, body),
+        onUploadProgress: function (progressEvent) {
+            if (showUploadProgress) {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                showUploadProgress(percentCompleted);
+            }
+        },
+        onDownloadProgress: function (progressEvent) {
+            if (showDownloadProgress) {
+                let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                showDownloadProgress(percentCompleted);
+            }
+        },
+    };
+
+    return config;
+};
+
 for (const [key, value] of Object.entries(SERVICE_URLS)) {
     API[key] = (body, showUploadProgress, showDownloadProgress) =>
-        axiosInstance({
-            method: value.method,
-            url: value.url,
-            data: value.method === 'DELETE' ? '' : body,
-            responseType: value.responseType,
-            headers: {
-                authorization: getAccessToken(),
-            },
-            TYPE: getType(value, body),
-            onUploadProgress: function (progressEvent) {
-                if (showUploadProgress) {
-                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    showUploadProgress(percentCompleted);
-                }
-            },
-            onDownloadProgress: function (progressEvent) {
-                if (showDownloadProgress) {
-                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    showDownloadProgress(percentCompleted);
-                }
-            }
-        });
+        axiosInstance(createAxiosConfig(value.url, value.method, body, value.responseType, showUploadProgress, showDownloadProgress));
 }
 
 export { API };
