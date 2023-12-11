@@ -23,7 +23,7 @@ const Image = styled('img')({
     width: '100%',
     height: '50vh',
     objectFit: 'cover',
-    borderRadius:'10px',
+    borderRadius: '10px',
 });
 
 const EditIcon = styled(Edit)`
@@ -46,7 +46,10 @@ const Heading = styled(Typography)`
     text-align: center;
     margin: 50px 0 10px 0;
 `;
-
+const Description = styled(Typography)`
+    white-space: pre-wrap;
+    font-size: 1.2rem;
+`;
 const Author = styled(Box)(({ theme }) => ({
     color: '#878787',
     display: 'block',
@@ -57,16 +60,17 @@ const Author = styled(Box)(({ theme }) => ({
     },
 }));
 
+
 const DetailView = () => {
     const url = 'https://res.cloudinary.com/dhbyg08yc/image/upload/v1684508241/logo-fotor-bg-remover-202304179588_rh4zlh.png';
-    
+
     const [post, setPost] = useState({});
     const { account } = useContext(DataContext);
     const mainurl = post.picture;
 
     const navigate = useNavigate();
     const { id } = useParams();
-    
+
     useEffect(() => {
         const fetchData = async () => {
             let response = await API.getPostById(id);
@@ -77,40 +81,41 @@ const DetailView = () => {
         fetchData();
     }, []);
 
-    const deleteBlog = async () => {  
+    const deleteBlog = async () => {
         await API.deletePost(post._id);
         navigate('/')
-    //     return <Alert variant="outlined" severity="warning">
-    //     This is a warning alert — check it out!
-    //   </Alert>;
+        //     return <Alert variant="outlined" severity="warning">
+        //     This is a warning alert — check it out!
+        //   </Alert>;
     }
 
- return (
-    <Container>
-        <div className='shadow-detail'>
-            <Heading>{post.title}</Heading>  
-            <Box className='none' style={{gap:'30px'}}>
-                {   
-                    account.username === post.username && 
-                    <>
-                        <Link className='button-86' to={`/update/${post._id}`}><EditNoteIcon style={{color:'greenyellow'}} /><span style={{fontWeight:'500', color:'greenyellow'}}>Edit</span></Link>
-                        <button className='button-86' onClick={() => deleteBlog()}><DeleteForeverIcon /><span style={{fontWeight:'500'}}>Delete</span></button>
-                        {/* <DeleteIcon className='button-86' onClick={() => deleteBlog()} color="error" /> */}
-                    </>
-                }
-            </Box>
-            <Author>
-                <Typography style={{color:'#000'}}><span style={{fontWeight:'600'}}>Author : </span><span><abbr title={"View All Posts From " +  post.username} style={{textDecoration:'none'}}><Link to={`/?username=${post.username}`} style={{textDecoration:'none',color:'#000'}}>{post.username}</Link></abbr></span></Typography>
-                <Typography style={{marginLeft: 'auto',color:'#000'}}><span style={{fontWeight:'600'}}>Posted On :</span> {new Date(post.createdDate).toDateString()}</Typography>
-            </Author>
-            <Image src={mainurl || url} alt="post" />
-        </div>
-        <div className='shadow' style={{padding:'35px',fontSize:'1.2rem',width:'auto',marginTop:'5vh'}}>
-        <Typography>{post.description}</Typography></div>
-        <div className='shadow' style={{marginTop:'10%',padding:'5%', display:'block',borderBottomLeftRadius:'0px',borderBottomRightRadius:'0px'}}><Comments post={post}/></div>
-        
-    </Container>
- )
+    return (
+        <Container>
+            <div className='shadow-detail'>
+                <Heading>{post.title}</Heading>
+                <Box className='none' style={{ gap: '30px' }}>
+                    {
+                        account.username === post.username &&
+                        <>
+                            <Link className='button-86' to={`/update/${post._id}`}><EditNoteIcon style={{ color: 'greenyellow' }} /><span style={{ fontWeight: '500', color: 'greenyellow' }}>Edit</span></Link>
+                            <button className='button-86' onClick={() => deleteBlog()}><DeleteForeverIcon /><span style={{ fontWeight: '500' }}>Delete</span></button>
+                            {/* <DeleteIcon className='button-86' onClick={() => deleteBlog()} color="error" /> */}
+                        </>
+                    }
+                </Box>
+                <Author>
+                    <Typography style={{ color: '#000' }}><span style={{ fontWeight: '600' }}>Author : </span><span><abbr title={"View All Posts From " + post.username} style={{ textDecoration: 'none' }}><Link to={`/?username=${post.username}`} style={{ textDecoration: 'none', color: '#000' }}>{post.username}</Link></abbr></span></Typography>
+                    <Typography style={{ marginLeft: 'auto', color: '#000' }}><span style={{ fontWeight: '600' }}>Posted On :</span> {new Date(post.createdDate).toDateString()}</Typography>
+                </Author>
+                <Image src={mainurl || url} alt="post" />
+            </div>
+            <div className='shadow' style={{ padding: '35px', fontSize: '1.2rem', width: 'auto', marginTop: '5vh' }}>
+                <Description>{post.description}</Description>
+            </div>
+            <div className='shadow' style={{ marginTop: '10%', padding: '5%', display: 'block', borderBottomLeftRadius: '0px', borderBottomRightRadius: '0px' }}><Comments post={post} /></div>
+
+        </Container>
+    )
 }
 
 export default DetailView;
